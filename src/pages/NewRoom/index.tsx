@@ -11,11 +11,14 @@ import {
   useColorModeValue,
   Input,
   Button,
+  Avatar,
 } from "@chakra-ui/react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 
 export default function NewRoom() {
+  const { data: session } = useSession();
+
   return (
     <>
       <Head>
@@ -29,17 +32,30 @@ export default function NewRoom() {
         <Stack spacing="8">
           <Stack spacing="6">
             <Img src="/assets/images/illustration.svg" />
-            <Stack spacing={{ base: "2", md: "3" }} textAlign="center" alignItems="center">
+            <Stack
+              spacing={{ base: "2", md: "3" }}
+              textAlign="center"
+              alignItems="center"
+            >
               <Heading size={useBreakpointValue({ base: "md", md: "lg" })}>
                 Criar uma nova sala
               </Heading>
+              <HStack spacing="1" justify="center">
+                <Avatar
+                  size="md"
+                  name={session?.user?.name}
+                  src={session?.user?.image}
+                  border="3px solid #04D361"
+                />
+                <Text color="muted">{session?.user?.name}</Text>
+              </HStack>
               <Button
-                onClick={() => signOut()}
                 variant="solid"
                 colorScheme="purple"
                 size="lg"
-                w="20"                
+                w="20"
                 rounded="full"
+                onClick={() => signOut()}
               >
                 Logout
               </Button>
