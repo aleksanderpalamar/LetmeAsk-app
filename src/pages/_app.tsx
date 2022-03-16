@@ -7,12 +7,12 @@ import { AuthContextProvider } from "../context/AuthContext";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
-    <NextAuthProvider session={pageProps.session}>
+    <NextAuthProvider session={pageProps.session}>      
       <AuthContextProvider>
-        <ChakraProvider theme={theme}>
-          <Component {...pageProps} />
-        </ChakraProvider>
-      </AuthContextProvider>
+      <ChakraProvider theme={theme}>                  
+          <Component {...pageProps} />   
+        </ChakraProvider>        
+      </AuthContextProvider>      
     </NextAuthProvider>
   );
 }

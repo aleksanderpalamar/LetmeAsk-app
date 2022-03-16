@@ -12,7 +12,8 @@ import {
   useColorModeValue,
   Input,
   Button,
-  Avatar,    
+  Avatar,
+  FormControl,    
 } from "@chakra-ui/react";
 
 import { useAuth } from "../../hooks/useAuth";
@@ -20,11 +21,12 @@ import { database } from "../../services/firebase";
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 
 export default function NewRoom() {
   const { user } = useAuth();
-  const history = useRouter();
+  const router = useRouter();
   const [newRoom, setNewRoom] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const { data: session } = useSession();
@@ -43,7 +45,7 @@ export default function NewRoom() {
       authorId: user?.id,
     });
 
-    history.push(`/admin/rooms/${firebaseRoom.key}`);
+    router.push(`/admin/rooms/${firebaseRoom.key}`);
   }
 
   //join a room
@@ -61,7 +63,7 @@ export default function NewRoom() {
       return;
     }
 
-    history.push(`/rooms/${roomCode}`);
+    router.push(`/rooms/${roomCode}`);
   }
 
   return (
@@ -95,7 +97,7 @@ export default function NewRoom() {
                 size="md"
                 w="20"
                 rounded="full"
-                onClick={() => signOut()}
+                onClick={() => signOut({callbackUrl: "/"})}
               >
                 Logout
               </Button>
@@ -110,17 +112,22 @@ export default function NewRoom() {
           >
             <Stack spacing="6">
               <Stack spacing="6">
+                <FormControl onSubmit={handleCreateRoom}>
                 <Input placeholder="Nome da sala" size="md" variant="flushed" />
                 <Button
                   variant="solid"
                   colorScheme="purple"
                   size="lg"
                   rounded="full"
-                  onSubmit={handleCreateRoom}
+                  mt="4"
+                  onChange={(e) => setNewRoom(e.target.value)}
+                  onClick={() => router.push("/AdminRoom")}
+                  value={newRoom}                 
                 >
                   {" "}
                   Criar sala
                 </Button>
+                </FormControl>
                 <HStack>
                   <Divider />
                   <Text fontSize="sm" whiteSpace="nowrap" color="muted">
@@ -128,6 +135,7 @@ export default function NewRoom() {
                   </Text>
                   <Divider />
                 </HStack>
+                <FormControl onSubmit={handleJoinRoom}>
                 <Input
                   placeholder="Digite o código da sala"
                   variant="flushed"
@@ -138,11 +146,15 @@ export default function NewRoom() {
                   colorScheme="purple"
                   size="lg"
                   rounded="full"
-                  onSubmit={handleJoinRoom}
+                  mt="4"
+                  onChange={(e) => setRoomCode(e.target.value)}
+                  onClick={() => router.push("/NewRoom")}
+                  value={roomCode}                  
                 >
                   {" "}
                   Entrar na sala
                 </Button>
+                </FormControl>
               </Stack>
             </Stack>
           </Box>
