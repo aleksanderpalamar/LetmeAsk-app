@@ -18,16 +18,20 @@ import {
 
 import { useAuth } from "../../hooks/useAuth";
 import { database } from "../../services/firebase";
-import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 
 export default function NewRoom() {
-  const { user } = useAuth();
+  const { user, singOutWithGoogle } = useAuth();
   const router = useRouter();
   const [newRoom, setNewRoom] = useState("");
   const [roomCode, setRoomCode] = useState("");
+
+  // Logout with Google
+  function handleSingOutWithGoogle() {    
+      singOutWithGoogle();    
+  }
   
   //create a new room
   async function handleCreateRoom(event: FormEvent) {
@@ -101,7 +105,7 @@ export default function NewRoom() {
                 size="md"
                 w="20"
                 rounded="full"
-                onClick={() => signOut({callbackUrl: "/"})}
+                onClick={handleSingOutWithGoogle}                
               >
                 Logout
               </Button>

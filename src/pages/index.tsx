@@ -2,7 +2,6 @@ import { Box, Button, Container, Divider, Heading, HStack, Img, Stack, Text, use
 import type { NextPage } from 'next'
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-
 import { GoogleIcon, TwitterIcon } from '../components/ProviderIcons/'
 import { useAuth } from '../hooks/useAuth';
 
@@ -16,7 +15,7 @@ const Home: NextPage = () => {
       singInWithGoogle();
     }
 
-    router.push("/rooms/new");
+    router.push("/NewRoom");
   }
 
   // Authenticate with Twitter
@@ -25,7 +24,7 @@ const Home: NextPage = () => {
       singInWithTwitter();
     }
 
-    router.push("/rooms/new");
+    router.push("/NewRoom");
   }
   
   return (
