@@ -1,15 +1,38 @@
 import { Box, Button, Container, Divider, Heading, HStack, Img, Stack, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
-import type { GetServerSideProps, NextPage } from 'next'
-import { getSession, signIn } from 'next-auth/react'
-import { GitHubIcon, GoogleIcon, TwitterIcon } from '../components/ProviderIcons/'
+import type { NextPage } from 'next'
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+
+import { GoogleIcon, TwitterIcon } from '../components/ProviderIcons/'
+import { useAuth } from '../hooks/useAuth';
 
 const Home: NextPage = () => {
-  function handleSignIn() {
-    signIn("github");
+  const router = useRouter();
+  const { user, singInWithGoogle, singInWithTwitter } = useAuth();
+
+  // Authenticate with Google
+  function handleCreateRoomGoogle() {
+    if (!user) {
+      singInWithGoogle();
+    }
+
+    router.push("/rooms/new");
   }
+
+  // Authenticate with Twitter
+  function handleCreateRoomTwitter() {
+    if (!user) {
+      singInWithTwitter();
+    }
+
+    router.push("/rooms/new");
+  }
+  
   return (
     <>
-    <>
+    <Head>
+      <title>Let me Ask</title>
+    </Head>    
     <Container
       maxW="lg"
       py={{ base: "12", md: "24" }}
@@ -50,6 +73,7 @@ const Home: NextPage = () => {
                 size="lg"
                 w="20"                
                 rounded="full"
+                onClick={handleCreateRoomGoogle}
               >
                 <GoogleIcon boxSize="8" />
               </Button>              
@@ -59,45 +83,18 @@ const Home: NextPage = () => {
                 size="lg"
                 w="20"                
                 rounded="full"
+                onClick={handleCreateRoomTwitter}
               >
-                <TwitterIcon boxSize="8" />
-              </Button>
-              <Button
-                onClick={handleSignIn}                
-                variant="solid"
-                colorScheme="purple"
-                size="lg"
-                w="20"                
-                rounded="full"
-              >
-                <GitHubIcon boxSize="8" />
-              </Button>
+                <TwitterIcon boxSize="8"/>
+              </Button>              
               </HStack>
             </Stack>
           </Stack>
         </Box>
       </Stack>
     </Container>    
-   </>    
-    </>
+   </>
   )
 }
 
 export default Home
-
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req })  
-
-  if (session) {
-    return {
-      redirect: {
-        destination: '/NewRoom',
-        permanent: false,
-      }
-    }
-  }
-
-  return {
-    props: {}
-  }
-}

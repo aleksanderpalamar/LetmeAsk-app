@@ -21,7 +21,6 @@ import { database } from "../../services/firebase";
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 
 export default function NewRoom() {
@@ -29,17 +28,17 @@ export default function NewRoom() {
   const router = useRouter();
   const [newRoom, setNewRoom] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const { data: session } = useSession();
-
+  
   //create a new room
-  async function handleCreateRoom(e: FormEvent) {
-    e.preventDefault();
+  async function handleCreateRoom(event: FormEvent) {
+    event.preventDefault();
 
     if (newRoom.trim() === "") {
       return;
     }
 
     const roomRef = database.ref("rooms");
+
     const firebaseRoom = await roomRef.push({
       title: newRoom,
       authorId: user?.id,
@@ -49,8 +48,8 @@ export default function NewRoom() {
   }
 
   //join a room
-  async function handleJoinRoom(e: FormEvent) {
-    e.preventDefault();
+  async function handleJoinRoom(event: FormEvent) {
+    event.preventDefault();
 
     if (roomCode.trim() === "") {
       return;
@@ -63,13 +62,18 @@ export default function NewRoom() {
       return;
     }
 
+    if (roomRef.val().endedAt) {
+      alert("A sala já foi finalizada.");
+      return;
+    }
+
     router.push(`/rooms/${roomCode}`);
   }
 
   return (
     <>
       <Head>
-        <title>Let me Ask | NewRoom</title>
+        <title>Let me Ask | </title>
       </Head>
       <Container
         maxW="lg"
@@ -83,13 +87,13 @@ export default function NewRoom() {
               spacing={{ base: "2", md: "3" }}
               textAlign="center"
               alignItems="center"
-            >
+            >              
               <Heading size={useBreakpointValue({ base: "md", md: "lg" })}>
                 Criar uma nova sala
               </Heading>
               <HStack spacing="1" justify="center">
-                <Avatar name={session?.user?.name} src={session?.user?.image} border="3px solid #f5f5f5" aria-label="Picture user"/>                
-                <Text color="muted">Usuário: {session?.user?.name}</Text>
+                <Avatar name={user?.name} src={user?.avatar} border="3px solid #f5f5f5" aria-label="Picture user"/>                
+                <Text color="muted">{user?.name}</Text>
               </HStack>
               <Button
                 variant="solid"
@@ -113,18 +117,21 @@ export default function NewRoom() {
             <Stack spacing="6">
               <Stack spacing="6">
                 <FormControl onSubmit={handleCreateRoom}>
-                <Input placeholder="Nome da sala" size="md" variant="flushed" />
+                <Input 
+                  placeholder="Nome da sala"
+                  onChange={(event) => setNewRoom(event.target.value)}
+                  value={newRoom} 
+                  size="md" 
+                  variant="flushed"
+                />
                 <Button
                   variant="solid"
+                  type="submit"
                   colorScheme="purple"
                   size="lg"
                   rounded="full"
-                  mt="4"
-                  onChange={(e) => setNewRoom(e.target.value)}
-                  onClick={() => router.push("/AdminRoom")}
-                  value={newRoom}                 
-                >
-                  {" "}
+                  mt="4"                                  
+                >                  
                   Criar sala
                 </Button>
                 </FormControl>
@@ -138,6 +145,8 @@ export default function NewRoom() {
                 <FormControl onSubmit={handleJoinRoom}>
                 <Input
                   placeholder="Digite o código da sala"
+                  onChange={(event) => setRoomCode(event.target.value)}
+                  value={roomCode}
                   variant="flushed"
                   size="md"
                 />
@@ -146,10 +155,7 @@ export default function NewRoom() {
                   colorScheme="purple"
                   size="lg"
                   rounded="full"
-                  mt="4"
-                  onChange={(e) => setRoomCode(e.target.value)}
-                  onClick={() => router.push("/NewRoom")}
-                  value={roomCode}                  
+                  mt="4"                                    
                 >
                   {" "}
                   Entrar na sala
